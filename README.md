@@ -18,9 +18,7 @@ Bioinformatics Training Platform (BTP) Module: Somatic Mutation Analysis
     * Have gained overview knowledge of different methods for identification of genes important in cancers.
   * Time Required
     * 
-  * Compute Requirements
-    * 
-	
+
 License
 =======
 The contents of this repository are released under the Creative Commons
