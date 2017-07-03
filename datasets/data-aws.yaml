@@ -1,0 +1,88 @@
+btp::modules:
+  somatic:
+    dirs:
+      - 'somatic'
+      - 'somatic/intogen'
+      - 'somatic/intogen/precomputed_results'
+      - 'somatic/somatic_signatures'
+    data:
+      TCGA_Melanoma_slimSMgene.maf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen'
+        targets: 
+          - 'somatic/intogen/TCGA_Melanoma_slimSMgene.maf'
+      consequences.tsv: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen/precomputed_results'
+        targets: 
+          - 'somatic/intogen/precomputed_results/consequences.tsv'
+      fimpact.gitools.tdm: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen/precomputed_results'
+        targets: 
+          - 'somatic/intogen/precomputed_results/fimpact.gitools.tdm'
+      genes.tsv: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen/precomputed_results'
+        targets: 
+          - 'somatic/intogen/precomputed_results/genes.tsv'
+      pathways.tsv: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen/precomputed_results'
+        targets: 
+          - 'somatic/intogen/precomputed_results/pathways.tsv'
+      project.tsv: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen/precomputed_results'
+        targets: 
+          - 'somatic/intogen/precomputed_results/project.tsv'
+      variant_genes.tsv: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen/precomputed_results'
+        targets: 
+          - 'somatic/intogen/precomputed_results/variant_genes.tsv'
+      variant_samples.tsv: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/intogen/precomputed_results'
+        targets: 
+          - 'somatic/intogen/precomputed_results/variant_samples.tsv'
+      Sample01.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample01.vcf'
+      Sample02.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample02.vcf'
+      Sample03.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample03.vcf'
+      Sample04.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample04.vcf'
+      Sample05.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets:
+          - 'somatic/somatic_signatures/Sample05.vcf'
+      Sample06.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample06.vcf'
+      Sample07.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample07.vcf'
+      Sample08.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample08.vcf'
+      Sample09.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample09.vcf'
+      Sample10.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample10.vcf'
+      Sample11.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample11.vcf'
+      Sample12.vcf: 
+        source: 'https://s3-ap-southeast-2.amazonaws.com/cancer-data-somatic/somatic_signatures'
+        targets: 
+          - 'somatic/somatic_signatures/Sample12.vcf'
