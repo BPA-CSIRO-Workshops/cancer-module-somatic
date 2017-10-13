@@ -1,4 +1,4 @@
-# cancer-module-somatic
+# Somatic Mutation Analysis
 Bioinformatics Training Platform (BTP) Module: Somatic Mutation Analysis
 
   * Topic

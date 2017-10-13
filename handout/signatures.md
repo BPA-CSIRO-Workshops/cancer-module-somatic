@@ -1,10 +1,9 @@
-Key Learning Outcomes
----------------------
+## Key Learning Outcomes
 
 After completing this practical the trainee should be able to:
 
 -   Visualise mutational signatures present in a cohort using somatic
-    single nucleotide mutation data in Variant Call Format (vcf) files.
+    single nucleotide mutation data in Variant Call Format (VCF) files.
 
 -   Compare analysis output with published results to identify common
     mutational signatures.
@@ -12,53 +11,56 @@ After completing this practical the trainee should be able to:
 -   Have gained overview knowledge of how somatic signatures can help
     with cohort cancer analysis.
 
-Resources You’ll be Using
--------------------------
+***
+## Resources You’ll be Using
 
 ### Tools Used
 
-R-3.2.2 statistical environment
-:   \
-    <https://www.r-project.org/>
+R-3.2.2 statistical environment:  
+https://www.r-project.org/
 
-SomaticSignatures R package
-:   \
-    <http://bioconductor.org/packages/release/bioc/html/SomaticSignatures.html>
+SomaticSignatures R package:  
+http://bioconductor.org/packages/release/bioc/html/SomaticSignatures.html
 
-BSgenome.Hsapiens.UCSC.hg19
-:   \
-    <http://bioconductor.org/packages/release/data/annotation/html/BSgenome.Hsapiens.UCSC.hg19.html>
+BSgenome.Hsapiens.UCSC.hg19:  
+http://bioconductor.org/packages/release/data/annotation/html/BSgenome.Hsapiens.UCSC.hg19.html
 
-VariantAnnotation
-:   \
-    <https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html>
+VariantAnnotation:  
+https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html
 
-GenomicRanges
-:   \
-    <https://bioconductor.org/packages/release/bioc/html/GenomicRanges.html>
+GenomicRanges:  
+https://bioconductor.org/packages/release/bioc/html/GenomicRanges.html
 
-Cairo
-:   \
-    <https://cran.rstudio.com/web/packages/Cairo/index.html>
+Cairo:  
+https://cran.rstudio.com/web/packages/Cairo/index.html
+
 
 ### Sources of Data
 
-TCGA melanoma SNV data
-:   \
-    <https://tcga-data.nci.nih.gov/tcga/>
+TCGA melanoma SNV data:  
+https://tcga-data.nci.nih.gov/tcga/
 
-ICGC ovarian SNV data
-:   \
-    <https://dcc.icgc.org/>
+ICGC ovarian SNV data:   
+https://dcc.icgc.org/
+
 
 ### Useful Links
 
-Variant Call Format (VCF) specification
-:   \
-    <http://samtools.github.io/hts-specs/VCFv4.2.pdf>
+Variant Call Format (VCF) specification:   
+http://samtools.github.io/hts-specs/VCFv4.2.pdf
 
-Introduction
-------------
+***
+## Author Information
+
+*Primary Author(s):*  
+Ann-Marie Patch, QIMR Berghofer ann-marie.patch@qimrberghofer.edu.au  
+Erdahl Teber, CMRI eteber@cmri.org.au  
+
+*Contributor(s):*  
+Martha Zakrzewski Martha.Zakrzewski@qimrberghofer.edu.au
+
+***
+## Introduction
 
 The most common genetic model for cancer development is the accumulation
 of DNA mutations over time, eventually leading to the disruption or
@@ -70,9 +72,7 @@ Recently researchers found a method to take all the single nucleotide
 mutations identified in tumour cells (somatic SNVs) and group them
 together by the type of the mutation and also what the neighbouring
 bases are. This is commonly referred to as somatic mutational
-signatures.
-
-Common mutational processes that are regularly identified in cancer
+signatures. Common mutational processes that are regularly identified in cancer
 sequencing are:
 
 -   Age: the aging process. These are high in C/T transitions due to
@@ -94,6 +94,7 @@ sequencing are:
 -   MMR: Mismatch repair pathway not working properly. These are high in
     C/T mutations too.
 
+<br>
 In cohort cancer analysis it is common to try to generate subtypes to
 group your data based on a particular molecular phenotype. A reason for
 doing may include finding sets of patients that have a similar form of
@@ -105,12 +106,12 @@ genome changes. The patients don’t have to have the same type of cancer
 so pan-cancer studies are using this analysis to find similarities
 across cancer types.
 
-Preparing the R environment
----------------------------
+***
+## Preparing the R environment
 
-The mathematical framework developed by Alexandrov et al was implemented
-in MATLAB. We are going to use a version implemented in R by Gehring et
-al, called `SomaticSignatures package`, that is very quick and flexible
+The mathematical framework developed by Alexandrov *et al.* was implemented
+in MATLAB. We are going to use a version implemented in R by Gehring *et
+al.* called `SomaticSignatures package`, that is very quick and flexible
 but currently only accepts point mutations not insertions or deletions
 (indels). In tests on our data we have found that the Somatic Signatures
 package in R returns very similar results to the full implementation of
@@ -121,13 +122,17 @@ The data files you will need are contained in the subdirectory called
 
 Open the Terminal and go to the `somatic_signatures` working directory:
 
-    cd ~/somatic/somatic_signatures
-    pwd
+  ```bash
+  cd ~/somatic/somatic_signatures
+  pwd
+  ```
 
 In this folder you should find 12 files that end with the extension
-.vcf. Use the list command to make sure you can see them.
+`.vcf`. Use the list command to make sure you can see them.
 
-    ls
+  ```bash
+  ls
+  ```
 
 These files contain data extracted from the TCGA melanoma paper and
 Australian ICGC ovarian paper both mentioned in the introductory slides.
@@ -142,17 +147,21 @@ command line.
 Load all the package libraries needed for this analysis by running the
 commands.
 
-    library(SomaticSignatures)
-    library(BSgenome.Hsapiens.UCSC.hg19)
-    library(ggplot2)
-    library(Cairo)
+  ```R
+  library(SomaticSignatures)
+  library(BSgenome.Hsapiens.UCSC.hg19)
+  library(ggplot2)
+  library(Cairo)
+  ```
 
 Set the directory where any output files will be generated
 
-    setwd("~/somatic/somatic_signatures")
+  ```R
+  setwd("~/somatic/somatic_signatures")
+  ```
 
-Loading and preparing the SNV mutation data
--------------------------------------------
+***
+## Loading and preparing the SNV mutation data
 
 The mutations used in this analysis need to be high quality somatic
 mutations
@@ -166,27 +175,35 @@ mutations
     and can also be picked up using this method. To avoid this use only
     high quality mutation calls.
 
-Read in the mutations from the 12 vcf files
+Read in the mutations from the 12 VCF files
 
-    files <- list.files("~/somatic/somatic_signatures", pattern="vcf$", full.names=TRUE)
+  ```R
+  files <- list.files("~/somatic/somatic_signatures", pattern="vcf$", full.names=TRUE)
+  ```
 
 To make sure all the files are listed run the command.
 
-    files 
+  ```R
+  files
+  ```
 
 You should see a list of 12 sample files.
 
 Next read in all the genomic positions of variants in the VCF files
-using the vranges class.
+using the `vranges` class.
 
-    vranges <- lapply(files, function(v) readVcfAsVRanges(v,"hg19"))
+  ```R
+  vranges <- lapply(files, function(v) readVcfAsVRanges(v,"hg19"))
+  ```
 
 Join all the lists of variant positions into one big data set so that it
 can be processed together and look at what is contained in the
-concatenated vranges data
+concatenated `vranges` data
 
-    vranges.cat <- do.call(c,vranges)
-    vranges.cat
+  ```R
+  vranges.cat <- do.call(c,vranges)
+  vranges.cat
+  ```
 
 The first line of output of the `vranges.cat` shows us that in total we
 have put over 100,000 mutations recording the chromosome positions and
@@ -196,18 +213,22 @@ Note there are a lot of NA values in this data set because we have left
 out non-essential information in order to cut down on the processing
 time.
 
-Next we need to ensure all the positions in the vranges object have been
+Next we need to ensure all the positions in the `vranges` object have been
 recorded in UCSC notation form so that they will match up with the
 reference we are using.
 
-    vranges.cat <- ucsc(vranges.cat)
+  ```R
+  vranges.cat <- ucsc(vranges.cat)
+  ```
 
 It is always important to select the correct reference for your data.
 
 We can print out how many mutations we have read in for each of the
 cancer samples we are using by using the command.
 
-    print(table(sampleNames(vranges.cat)))
+  ```R
+  print(table(sampleNames(vranges.cat)))
+  ```
 
 We have now added all the positional and base change information now we
 can use the reference and the position of the mutation to look up the
@@ -215,80 +236,45 @@ bases on either side of the mutation i.e. the mutation context.
 
 Run the mutationContext function of SomaticSignatures.
 
-    mc <- mutationContext(vranges.cat, BSgenome.Hsapiens.UCSC.hg19)
+  ```R    
+  mc <- mutationContext(vranges.cat, BSgenome.Hsapiens.UCSC.hg19)
+  ```
 
-We can inspect what information we had added to the vranges.cat object
-by typing ’mc’ on the command line. Notice that the mutation and its
+We can inspect what information we had added to the `vranges.cat` object
+by typing `mc` on the command line. Notice that the mutation and its
 context have been added to the last two columns.
 
-    mc
+  ```R
+  mc
+  ```
 
-SNV mutation context
---------------------
+***
+## SNV mutation context
 
 There are a total of 96 possible single base mutations and context
 combinations. We can calculate this by listing out the six possible
 types of single nucleotide mutations:
 
--   A/C
+  <pre>
+  -   C/A   the reverse compliment (G/T) is also in this group
+  -   C/G   includes (G/C)
+  -   C/T   includes (G/C)
+  -   T/A   includes (A/T)
+  -   T/C   includes (A/G)
+  -   T/G   includes (A/C)
+  </pre>
 
-    the reverse compliment (T/G) is also in this group
-
--   A/G
-
-    includes (T/C)
-
--   A/T
-
-    includes (T/A)
-
--   C/A
-
-    includes (G/T)
-
--   C/G
-
-    includes (G/C)
-
--   C/T
-
-    includes (G/C)
 
 The neighbouring bases, on either side of a mutation, are referred to as
 the mutation context. There are 16 possible combinations of mutation
 contexts. Here [.] stands for one of the mutations listed above.
 
--   A[.]A
-
-    A[.]C
-
-    A[.]G
-
-    A[.]T
-
--   C[.]A
-
-    C[.]C
-
-    C[.]G
-
-    C[.]T
-
--   G[.]A
-
-    G[.]C
-
-    G[.]G
-
-    G[.]T
-
--   T[.]A
-
-    T[.]C
-
-    T[.]G
-
-    T[.]T
+  <pre>
+  -   A[.]A   A[.]C   A[.]G   A[.]T
+  -   C[.]A   C[.]C   C[.]G   C[.]T
+  -   G[.]A   G[.]C   G[.]G   G[.]T
+  -   T[.]A   T[.]C   T[.]G   T[.]T
+  </pre>
 
 Now if we substitute the [.]’s with each of the 6 different mutations
 you will find there are 96 possible types of combined mutations and
@@ -296,43 +282,48 @@ contexts (6 x 16).
 
 Start by substituting [.] for the A/C mutation type
 
--   A[A/C]A
-
--   A[A/C]C
-
--   A[A/C]G
-
--   A[A/C]T
-
--   C[A/C]A
-
--   C[A/C]C
-
--   C[A/C]G
+  <pre>
+  -   A[C/A]A
+  -   A[C/A]C
+  -   A[C/A]G
+  -   A[C/A]T
+  -   C[C/A]A
+  -   C[C/A]C
+  -   C[C/A]G
+  </pre>
 
 and so on...
 
 We assign all the somatic mutations identified in a single tumour to one
 of these categories and total up the number in each.
 
-What about a mutation that looks like G[T/G]A, where should this go?
-Hint remember to reverse compliment all the nucleotides.
+!!! note "Question"
+    What about a mutation that looks like G[A/C]A, where should this go?
 
-In the T[A/C]C context count.
+    !!! hint ""
+        ??? "**Hint**"
+            Remember to reverse compliment all the nucleotides.
 
+    !!! success ""
+        ??? "**Answer**"       
+            In the T[T/G]C context count.
+
+<br>
 Now we have all the information that is needed for each sample we can
 make a matrix that contains counts of mutations in each of the 96
 possible combinations of mutations and contexts counting up the totals
 separately for each sample
 
-    mm <- motifMatrix(mc, group = "sampleNames", normalize=TRUE)
-    dim(mm)
+  ```R
+  mm <- motifMatrix(mc, group = "sampleNames", normalize=TRUE)
+  dim(mm)
+  ```
 
 The output of the `dim(mm)` command show us that there are 96 rows
 (these are the context values) and 12 columns which are the 12 samples.
 
-Running the NMF analysis
-------------------------
+***
+## Running the NMF analysis
 
 Using the matrix we have made we can now run the non-negative matrix
 factorisation (NMF) process that attempts to find the most stable,
@@ -347,24 +338,31 @@ this practical. If you have more samples from potentially diverse
 sources you may need to run with a larger range of signatures and with
 more replicates.
 
-to find out how many signatures we have in the data run the command.
+To find out how many signatures we have in the data run the command.
 
-    gof_nmf <- assessNumberSignatures(mm, 2:10, nReplicates = 5)
+  ```R
+  gof_nmf <- assessNumberSignatures(mm, 2:10, nReplicates = 5)
+  ```
 
 Visualise the results from the NMF processing by making a pdf of the
 plot
 
-    Cairo(file="plotNumberOfSignatures.pdf", type="pdf", units="in", width=9, height=8, dpi=72)
-    plotNumberSignatures(gof_nmf)
-    dev.off()
+  ```R
+  pdf(file="plotNumberOfSignatures.pdf", width=9, height=8)
+  plotNumberSignatures(gof_nmf)
+  dev.off()
+  ```
 
 Open up the PDF and examine the curve. The plotNumberOfSignatures PDF
 that will have been made in the working directory that you set up at the
 beginning
 
-[H] ![image](handout/numberofsignatures.png) [Figure 1:Number of
-signatures plot]
+![image](images/numberofsignatures.png) **Figure 1:** This plot is used to find the number of signatures that is likely to be the best grouping solution. The top plot shows the decreasing residual sum of squares for each
+increasing number of signatures and the bottom plot the increasing explained variance as
+the number of potential signatures increases. Ideally the best solution will be the lowest
+number of signatures with a low RSS and a high explained variance.
 
+<br>
 Look at the y-axis scale on the bottom panel of Figure 1. The explained
 variance is already very high and so close to finding the correct
 solution for the number of signatures even with just 2. The error bars
@@ -376,15 +374,20 @@ started to flatten out.
 Now run the NMF again but this time stipulating that you want to group
 the data into 3 different mutational signatures.
 
+  ```R
     sigs_nmf = identifySignatures(mm, 3, nmfDecomposition)
+  ```
 
 Visualise the shape of the profiles for these 3 signatures
 
-    Cairo(file="plot3Signatures.pdf", type="pdf", units="in", width=10, height=8, dpi=72)
+
+  ```R
+    pdf(file="plot3Signatures.pdf", width=10, height=8)
     plotSignatures(sigs_nmf,normalize=TRUE, percent=FALSE) + ggtitle("Somatic Signatures: NMF - Barchart") + scale_fill_brewer(palette = "Set2")
     dev.off()
+  ```
 
-open up the plot3Signatures pdf that will have been made in the working
+Open up `plot3Signatures.pdf` that will have been made in the working
 directory.
 
 You should have generated a plot with three signature profiles obtained
@@ -398,70 +401,91 @@ and context combinations in each signature.
 Although the section colours are different to the plot you have
 generated the mutations are still in the same order across the plot.
 
-Interpreting the signature results
-----------------------------------
+***
+## Interpreting the signature results
 
-In their paper Alexandrov et al used this analysis to generate profiles
+In their paper Alexandrov *et al.* used this analysis to generate profiles
 from the data for more than 7000 tumour samples sequenced through both
 exome and whole genome approaches. They were able to group the data to
 reveal which genomes have been exposed to similar mutational processes
 contributing to the genome mutations.
 
-[H] ![image](handout/alexandrov_nature.png) [Figure 2. 21 signature
-patterns identified from the analysis of more than 7000 different
-tumours from Alexandrov et al. Nature 2013.]
+![image](images/alexandrov_nature.png) **Figure 2.** The 96 possible mutation/context
+combinations are plotted along the x axis arranged in blocks of 6 lots of 16.
+The y axis indicates the frequency of those particular mutation and context
+combinations in each signature. *Source*: Alexandrov *et al.* Nature 2013
 
-Can you match up, by eye, the profile shapes against a selection of
-known mutational signatures supplied (figure 2)?
+<br>  
 
-Try to match up the patterns made by the positions of the highest peaks
-for each signature.
+!!! note "Question"
+    Can you match up, by eye, the profile shapes against a selection of
+    known mutational signatures supplied (Figure 2)?
 
--   Alexandrov signature 7 matches with our signature 1
+    Try to match up the patterns made by the positions of the highest peaks for each signature.
 
--   Alexandrov signature 13 matches with our signature 2
+    !!! success ""
+        ??? "**Answer**"
 
--   Alexandrov signature 3 matches with our signature 3
+            -   Alexandrov signature 7 matches with our signature 1
 
-Now use the table from Alexandrov et al to identify which mutational
+            -   Alexandrov signature 13 matches with our signature 2
+
+            -   Alexandrov signature 3 matches with our signature 3
+
+<br>
+Now use the table from Alexandrov *et al.* to identify which mutational
 processes our three generated signatures have been associated with.
 
-[H] ![image](handout/mutational_processes.png) [Figure 3 Table
-indicating the probable association of the identified signatures with
-mutational processes and the origin site of the cancer samples from
-Alexandrov et al. Nature 2013.]
+![image](images/mutational_processes.png) **Figure 3.** The 21 signatures identified
+are indicated as rows with the number corresponding to Figure 2 on the left. The
+types of tumours used in the analysis are listed as columns. A green dot at the
+intersection of a signature and tumour indicates the signature was identified in
+that sample type. Where verified the mutational process is listed on the right.
+*Source*: Alexandrov *et al.* Nature 2013
 
-What mutational mechanisms have been associated with the signatures that
-you have generated?
+<br>
 
--   Our signature 1 (AS7) is associated with Ultraviolet radiation
-    damage to DNA. This has previously been identified in Head and Neck
-    and Melanoma cancer samples.
+!!! note "Question"
+    What mutational mechanisms have been associated with the signatures that
+    you have generated?
 
--   Our signature 2 (AS 13) is associated with the activity of
-    anti-viral APOBEC enzymes. This has previously been seen in Breast
-    and Bladder cancer samples.
+    !!! success ""
+        ??? "**Answer**"
 
--   Our signature 3 (AS3) is associated with BRCA1 and BRCA2 mutations,
-    i.e. the homologous recombination repair pathway not working
-    properly. This has been seen in Breast, Ovarian and Pancreas cancer
-    samples.
+            -   Our signature 1 (AS7) is associated with Ultraviolet radiation
+                damage to DNA. This has previously been identified in Head and Neck
+                and Melanoma cancer samples.
 
+            -   Our signature 2 (AS 13) is associated with the activity of
+                anti-viral APOBEC enzymes. This has previously been seen in Breast
+                and Bladder cancer samples.
+
+            -   Our signature 3 (AS3) is associated with BRCA1 and BRCA2 mutations,
+                i.e. the homologous recombination repair pathway not working
+                properly. This has been seen in Breast, Ovarian and Pancreas cancer
+                samples.
+
+<br>
 Now we can plot out the results for the individual samples in our
 dataset to show what proportion of their mutations have been assigned to
 each of the signatures.
 
-    Cairo(file="PlotSampleContribution3Signatures.pdf", type="pdf", units="in", width=9, height=6, dpi=72)
-    plotSamples(sigs_nmf, normalize=TRUE) + scale_y_continuous(breaks=seq(0, 1, 0.2), expand = c(0,0))+ theme(axis.text.x = element_text(size=6))
-    dev.off()
+  ```R
+  pdf(file="PlotSampleContribution3Signatures.pdf", width=9, height=6)
+  plotSamples(sigs_nmf, normalize=TRUE) + scale_y_continuous(breaks=seq(0, 1, 0.2), expand = c(0,0))+ theme(axis.text.x = element_text(size=6))
+  dev.off()
+  ```
 
 If you don’t have time to carry out the advanced questions you can exit
 R and return to the normal terminal command line.
 
-    quit()
-    n
+  ```R
+  quit()
+  n
+  ```
 
-Open the resulting PlotSampleContribution3Signatures.pdf.
+<br>
+Open the resulting `PlotSampleContribution3Signatures.pdf`.  
 
 This shows the results for the mutation grouping for each sample. The
 samples are listed on the x-axis and the proportion of all mutations for
@@ -472,51 +496,55 @@ sample is called its "major signature".
 
 The data you have been using contains samples from High Grade Serous
 Ovarian Carcinomas and Cutaneous Melanoma.
+<br>
 
-Using the major signature found for each sample can you guess which are
-ovarian and which are melanoma samples?
+!!! note "Question"
+    Using the major signature found for each sample can you guess which are
+    ovarian and which are melanoma samples?
 
--   Samples 9-12 have the majority signature of our signature 1. This is
-    the UV signature and so these are likely to be Melanoma samples.
+    !!! success ""
+        ??? "**Answer**"
 
--   Samples 4-8 have the majority signature of our signature 3. This is
-    the BRCA signature and these are most likely to be ovarian samples.
+            -   Samples 9-12 have the majority signature of our signature 1. This is
+                the UV signature and so these are likely to be Melanoma samples.
 
--   Samples 1-3 have the majority signature of our signature 2. This is
-    the APOBEC signature indicating activity of the anti-viral APOBEC
-    enzymes. These are less likely to be from cutaneous melanoma because
-    they have very few UV associated mutations although it could
-    possibly be from a different subtype. However it is much more likely
-    that these will be ovarian tumours as this APOBEC signature has been
-    seen in breast tumours which can be similar to ovarian cancers in
-    terms of the mutated genes.
+            -   Samples 4-8 have the majority signature of our signature 3. This is
+                the BRCA signature and these are most likely to be ovarian samples.
 
-This is an open question for discussion at the end of the practical.
+            -   Samples 1-3 have the majority signature of our signature 2. This is
+                the APOBEC signature indicating activity of the anti-viral APOBEC
+                enzymes. These are less likely to be from cutaneous melanoma because
+                they have very few UV associated mutations although it could
+                possibly be from a different subtype. However it is much more likely
+                that these will be ovarian tumours as this APOBEC signature has been
+                seen in breast tumours which can be similar to ovarian cancers in
+                terms of the mutated genes.
 
-How can this analysis be useful for cancer genomics studies?
+!!! note "Question"
+    This is an open question for discussion at the end of the practical.
 
-Now rerun the process this time using 4 signatures as the solution.
+    How can this analysis be useful for cancer genomics studies?
 
-Hint: you don’t have to start back at the beginning but you can jump to
-the step where you run the NMF but this time for 4 instead of 3
-signatures. Then continue through making the plots.
+!!! note "*Advanced exercise*"
+    Now rerun the process this time using 4 signatures as the solution.
 
-You will need to change the name of each plot you remake with 4
-signatures because Cairo won’t let you overwrite and existing file.
+    !!! hint ""
+        ??? "**Hint**"
+            You don’t have to start back at the beginning but you can jump to
+            the step where you run the NMF but this time for 4 instead of 3
+            signatures. Then continue through making the plots. You will need to
+            change the name of each plot you remake with 4 signatures because
+            Cairo won’t let you overwrite and existing file.
 
-Can you find a good match in the set of known signatures for all 4
-patterns?
+    Can you find a good match in the set of known signatures for all 4 patterns?
 
-Can you find a verified process for all of the profiles you are seeing?
+    Can you find a verified process for all of the profiles you are seeing?
 
-References
-----------
+***
+## References
 
-Alexandrov et al. Nature 2013
-:   \
-    <http://www.nature.com/nature/journal/v500/n7463/pdf/nature12477.pdf>
+Alexandrov *et al.* Nature 2013:   
+http://www.nature.com/nature/journal/v500/n7463/pdf/nature12477.pdf
 
-Gehring et al. Bioinformatics 2015
-:   \
-    <http://bioinformatics.oxfordjournals.org/content/early/2015/07/31/bioinformatics.btv408.full>
-
+Gehring *et al.* Bioinformatics 2015:   
+http://bioinformatics.oxfordjournals.org/content/early/2015/07/31/bioinformatics.btv408.full
